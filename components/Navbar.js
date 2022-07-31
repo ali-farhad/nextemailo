@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Link from 'next/link';
 
 export default function Navbar() {
     const [isActive, setActive] = useState(false);
@@ -25,9 +26,9 @@ export default function Navbar() {
             <a href="#" className="text-grayishViolet hover:text-veryDarkViolet"
               >Pricing</a
             >
-            <a href="#" className="text-grayishViolet hover:text-veryDarkViolet"
-              >Blog</a
-            >
+            <Link href="/blog/home">
+           <span className="cursor-pointer text-grayishViolet hover:text-veryDarkViolet">Blog</span> 
+          </Link>
           </div>
         </div>
 
@@ -66,7 +67,9 @@ export default function Navbar() {
         >
           <a href="#" className="w-full text-center">Features</a>
           <a href="#" className="w-full text-center">Pricing</a>
-          <a href="#" className="w-full text-center">Blog</a>
+          <Link className="w-full text-center" href="/blog/home">
+          Blog
+          </Link>
           <a href="#" className="w-full pt-6 border-t border-gray-400 text-center"
             >Login</a
           >
