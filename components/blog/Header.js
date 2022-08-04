@@ -5,6 +5,7 @@ import { getCategories } from "../../services/cloud";
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
+ 
 
   useEffect(() => {
     getCategories().then((newCategories) => {

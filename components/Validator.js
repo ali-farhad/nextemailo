@@ -2,30 +2,72 @@ import React, {useState} from 'react';
 import Skeleton, {SkeletonTheme} from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
+import { useSession} from "next-auth/react";
+import { UpdateLimit } from '../services/cloud';
+
 
 export default function Validator() {
+  const { data: session, status } = useSession();
+
     const [isLoading, setIsLoading] = useState(false);
     const [isValid, setIsValid] = useState({});
 
+    // console.log(session.user.email, "email")
+
     const handleSubmit = async (e) =>{
         isValid.Success = false;
+        e.preventDefault();
+        const email = e.target.email.value;
+        const limit = JSON.parse(localStorage.getItem("limit"));
+        // console.log(limit)
+        //if limit is 0 then abort
+        if(limit === 0 && limit !== null){
+          setIsValid({
+            Success: false,
+            message: "You have reached your limit. Please Upgrade Your Plan!"
+        });
+        return false;
+      } else {
 
-
-       e.preventDefault();
-         const email = e.target.email.value;
+        const isEmailValid = async () => {
+          //take limit out of local storage and minus 1
+          const limit = JSON.parse(localStorage.getItem("limit"));
         
-       const isEmailValid = async () => {
-            setIsLoading(true);
-            const response = await fetch(`https://verify.gmass.co/verify?email=${email}&key=52D5D6DD-CD2B-4E5A-A76A-1667AEA3A6FC`);
-            const data = await response.json();
-            setIsLoading(false);
-            return data;
-       } 
+          if(limit)
+          {
+          const newLimit = limit - 1;
+          localStorage.setItem("limit", JSON.stringify(newLimit));
+          
+          UpdateLimit(session.user.email, newLimit).then((result) => {
+            // console.log(result)
+          }); 
 
-         isEmailValid().then(data => {
-            setIsValid(data);
-            console.log(data);
-         })
+          // getComments(slug).then((result) => {
+          //   setComments(result);
+          // });
+        }
+         
+
+          setIsLoading(true);
+          const response = await fetch(`https://verify.gmass.co/verify?email=${email}&key=52D5D6DD-CD2B-4E5A-A76A-1667AEA3A6FC`);
+          const data = await response.json();
+          setIsLoading(false);
+          return data;
+     }
+
+     isEmailValid().then(data => {
+      console.log(data);
+        setIsValid(data);
+        console.log(data);
+     })
+
+
+      }
+
+        
+        
+
+        
 
     };
     
@@ -68,7 +110,7 @@ export default function Validator() {
         {/* if isLoading show loading othewrise */}
         {isLoading && (
             <div className="mt-1">
-                 <SkeletonTheme baseColor="#fff" highlightColor="#F3F4F6">
+                 <SkeletonTheme baseColor="#fff" highlightColor="#00FFFF">
             <Skeleton height={100} />
             </SkeletonTheme>
 
@@ -120,6 +162,28 @@ export default function Validator() {
              </div>
            </div>  
         )}
+
+
+{(isValid.message && !isValid.Success) && (
+             <div
+             className="flex flex-col items-center justify-between w-full p-6 bg-white rounded-lg md:flex-row"
+           >
+             <p className="font-bold text-center text-veryDarkViolet md:text-left">
+               {isValid.message}
+             </p>
+   
+             <div
+               className="flex flex-col items-center justify-end flex-1 space-x-4 space-y-2 md:flex-row md:space-y-0"
+             >
+               <div className="font-bold text-red">ERROR</div>
+               <button
+                 className="p-2 px-8 text-white bg-red rounded-lg hover:opacity-70 focus:outline-none"
+               >
+                 X
+               </button>
+             </div>
+           </div>  
+        )}
     
             
        
@@ -132,5 +196,3 @@ export default function Validator() {
   )
 }
 
-
-  

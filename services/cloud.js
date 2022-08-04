@@ -145,21 +145,7 @@ export const submitComment = async (obj) => {
   return result.json();
 };
 
-export const getComments = async (slug) => {
-  const query = gql`
-    query GetComments($slug:String!) {
-      comments(where: {post: {slug:$slug}}){
-        name
-        createdAt
-        comment
-      }
-    }
-  `;
 
-  const result = await request(graphqlAPI, query, { slug });
-
-  return result.comments;
-};
 
 
 export const getCategoryPost = async (slug) => {
@@ -200,3 +186,86 @@ export const getCategoryPost = async (slug) => {
 };
 
 
+
+export const getPricing = async (slug) => {
+  const query = gql`
+  query MyQuery {
+    pricingsConnection {
+      edges {
+        node {
+          starterValue
+          proValue
+        }
+      }
+    }
+  }
+  
+  `;
+
+  
+  const result = await request(graphqlAPI, query, { slug });
+
+  return result.pricingsConnection.edges;
+};
+
+
+const CreateNextUserByEmail = gql`
+  mutation CreateNextUserByEmail($email: String!, $password: String!) {
+    newUser: createNextUser(data: { email: $email, password: $password }) {
+      id
+    }
+  }
+`;
+
+export const UpdateLimit = async (email, limit) => {
+  const query = gql`
+  mutation UpdateLimit($email: String!, $limit: Int!) {
+    updateUser: updateNextUser(where: {email: $email}, data: {limit: $limit}) {
+      email
+      plan
+      limit
+      pquota
+    }
+  }
+  `;
+
+  const result = await request(graphqlAPI, query, { email, limit });
+
+  return result;
+
+}
+
+
+export const GetUserByEmail = async (email) => {
+  const query = gql`
+  query GetUserByEmail($email: String!) {
+    nextUser(where: { email: $email },) {
+      email
+      plan
+      limit
+      pquota
+    }
+  }
+  `;
+
+  const result = await request(graphqlAPI, query, { email });
+
+  return result.nextUser;
+};
+
+
+export const getComments = async (slug) => {
+  const query = gql`
+    query GetComments($slug:String!) {
+      comments(where: {post: {slug:$slug}}){
+        name
+        createdAt
+        comment
+      }
+    }
+  `;
+
+  const result = await request(graphqlAPI, query, { slug });
+
+  return result.comments;
+};

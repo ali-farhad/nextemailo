@@ -22,30 +22,33 @@ function Footer() {
               <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
                 >Sitemap</a
               >
-              <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
+              {/* <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
                 >Languages</a
+              > */}
+              <a href="#pricing" className="capitalize text-grayishViolet hover:text-cyan"
+                >Pricing</a
               >
             </div>
           </div>
 
           {/* <!-- Menu 2 --> */}
-          <div className="flex flex-col items-center w-full md:items-start">
+          <div className="flex flex-col items-center  md:items-start">
             <div className="mb-5 font-bold text-white capitalize">Resources</div>
             <div className="flex flex-col items-center space-y-3 md:items-start">
-              <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
+              <a href="/blog/home" className="capitalize text-grayishViolet hover:text-cyan"
                 >Blog</a
               >
-              <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
+              <a href="#stats" className="capitalize text-grayishViolet hover:text-cyan"
                 >Features</a
               >
-              <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
+              <a href="mailto: emailo@admin.com" className="capitalize text-grayishViolet hover:text-cyan"
                 >Support</a
               >
             </div>
           </div>
 
           {/* <!-- Menu 3 --> */}
-          <div className="flex flex-col items-center w-full md:items-start">
+          {/* <div className="flex flex-col items-center w-full md:items-start">
             <div className="mb-5 font-bold text-white capitalize">Company</div>
             <div className="flex flex-col items-center space-y-3 md:items-start">
               <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
@@ -58,11 +61,11 @@ function Footer() {
                 >Contact</a
               >
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* <!-- Social Container --> */}
-        <div className="flex space-x-6">
+        <div className="flex space-x-6 md:pr-5 ">
           <a href="#">
             <img src="/icon-facebook.svg" alt="" className="ficon" />
           </a>

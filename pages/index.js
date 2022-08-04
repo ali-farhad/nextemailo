@@ -1,10 +1,12 @@
 import Head from 'next/head'
 
 //import componenets
-import Test from '../components/Test'
-import Navbar from '../components/Navbar'
 import Validator from '../components/Validator'
 import Footer from '../components/Footer'
+import Pricing from '../components/Pricing'
+
+//import auth
+import {signIn, signOut} from "next-auth/react";
 
 
 export default function Home() {
@@ -35,7 +37,7 @@ export default function Home() {
           </p>
           <div className="mx-auto lg:mx-0">
             <a
-              href="#"
+              href="#pricing"
               className="py-5 px-10 text-2xl font-bold text-white bg-cyan rounded-full lg:py-4 hover:opacity-70"
               >Get Started</a
             >
@@ -146,6 +148,9 @@ export default function Home() {
       </div>
     </section>  
 
+    {/* PRICING COMPONENET  */}
+    <Pricing/>
+
      {/* <!-- CTA Section --> */}
     <section id="cta" className="py-24 bg-darkViolet">
       <div className="flex flex-col p-2 space-y-6">
@@ -162,6 +167,8 @@ export default function Home() {
         </button>
       </div>
     </section> 
+
+
 
     {/* Footer Component */}
     <Footer/>
