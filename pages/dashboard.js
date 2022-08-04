@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from './../components/Navbar';
-import Footer from './../components/Footer';
-import Validator from './../components/Validator';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import Validator from '../components/Validator';
 
 
 //import auth
@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 
 
-const dashboard = ({se, userData}) => {
+const Dashboard = ({se, userData}) => {
     const [isActive, setActive] = useState(false);
     const [user, setUser] = useState(userData);
     const { data: session, status } = useSession();
@@ -187,7 +187,7 @@ const dashboard = ({se, userData}) => {
   )
 }
 
-export default dashboard
+export default Dashboard
 
 export async function getServerSideProps(ctx) {
     //get session
