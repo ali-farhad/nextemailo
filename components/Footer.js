@@ -1,4 +1,5 @@
-import Link from "next/link"
+import Link from "next/link";
+
 function Footer() {
   return (
     <div>
@@ -17,15 +18,13 @@ function Footer() {
           <div className="flex flex-col items-center w-full md:items-start">
             <div className="mb-5 font-bold text-white capitalize">Features</div>
             <div className="flex flex-col items-center space-y-3 md:items-start">
-              <a  className="capitalize text-grayishViolet hover:text-cyan">
-               <Link href="#"> Email Validations</Link></a>
-              <a className="capitalize text-grayishViolet hover:text-cyan"
-                > <Link href="#">Sitemap</Link></a>
-              {/* <a href="#" className="capitalize text-grayishViolet hover:text-cyan"
-                >Languages</a
-              > */}
-              <a className="capitalize text-grayishViolet hover:text-cyan"
-                > <Link href="#pricing">Pricing</Link> Pricing</a>
+              <button  className="capitalize text-grayishViolet hover:text-cyan">
+               <Link href="#"> Email Validations</Link></button>
+              <button className="capitalize text-grayishViolet hover:text-cyan"
+                > <Link href="#">Sitemap</Link></button>
+           
+              <button className="capitalize text-grayishViolet hover:text-cyan"
+                > <Link href="#pricing">Pricing</Link> Pricing</button>
             </div>
           </div>
 
@@ -33,15 +32,9 @@ function Footer() {
           <div className="flex flex-col items-center  md:items-start">
             <div className="mb-5 font-bold text-white capitalize">Resources</div>
             <div className="flex flex-col items-center space-y-3 md:items-start">
-              <a  className="capitalize text-grayishViolet hover:text-cyan"
-                > <Link href="/blog/home">Blog</Link></a
-              >
-              <a  className="capitalize text-grayishViolet hover:text-cyan"
-                ><Link href="#stats">Features</Link> </a
-              >
-              <a  className="capitalize text-grayishViolet hover:text-cyan"
-                > <Link href="mailto: emailo@admin.com">Support</Link></a
-              >
+              <button  className="capitalize text-grayishViolet hover:text-cyan"> <Link href="/blog/home">Blog</Link></button>
+              <button  className="capitalize text-grayishViolet hover:text-cyan"><Link href="#stats">Features</Link> </button>
+              <button  className="capitalize text-grayishViolet hover:text-cyan"><Link href="mailto: emailo@admin.com">Support</Link></button>
             </div>
           </div>
 

@@ -25,10 +25,10 @@ const Dashboard = ({se, userData}) => {
 
       useEffect(() => {
         //if limit does not exist in local storage
-        if(!localStorage.getItem("limit")){
+       
             //set limit to default value
             localStorage.setItem("limit", JSON.stringify(userData.limit));
-        }
+        
           if(limit !== userData.limit) {
           localStorage.setItem("limit", JSON.stringify(userData.limit));
         }
