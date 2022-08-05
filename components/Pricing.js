@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { checkout } from '../checkout';
 
 import { getPricing } from '../services/cloud'
+import {useSession, signIn, signOut} from "next-auth/react";
+
 
 const Pricing = () => {
     const [pricing, setPricing] = useState([]);
+    const session = useSession();
+    console.log(session.status); //unauthenticated
+
     useEffect(() => {
         getPricing().then((newPricing) => {
           
@@ -11,11 +17,49 @@ const Pricing = () => {
         });
       }, []);
 
-    //   console.log(pricing.proValue)
-    //   {
-    //     "starterValue": 20,
-    //     "proValue": 500
-    // }
+    const handleCheckout = (e) => {
+        e.preventDefault();
+
+        if(session.status === 'unauthenticated') {
+           return  signIn("google");
+        }
+        else {
+
+          
+
+
+         
+        if(e.target.name==="starter") {
+            let lineItems = [
+                {
+                    price: "price_1LTSW8G0xa05mnESwf7RE2vZ",
+                    quantity: 1,
+                }
+            ];
+
+            return checkout({lineItems});    
+
+        }; 
+
+        if(e.target.name==="pro") {
+            let lineItems = [
+                {
+                    price: "price_1LTTBSG0xa05mnESvBxa9XFb",
+                    quantity: 1,
+                }
+            ];
+
+            checkout({lineItems});    
+
+        } 
+        
+        
+        
+        
+    }
+
+    }
+
   
   return (
     <div>
@@ -76,9 +120,9 @@ const Pricing = () => {
             </li>
         </ul>
         <div className="mt-6 rounded-md shadow">
-            <a href="#" className="flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-black hover:outline hover:outline-2 outline outline-1  focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button onClick={() => signIn("google")}  className=" w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-black hover:outline hover:outline-2 outline outline-1  focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 Get Started
-            </a>
+            </button>
         </div>
     </div>
             </div>
@@ -138,9 +182,9 @@ const Pricing = () => {
             </li>
         </ul>
         <div className="mt-6 rounded-md shadow">
-            <a href="#" className="flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-cyan hover:bg-cyanLight focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button name="starter"  onClick={(e) => handleCheckout(e)} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-cyan hover:bg-cyanLight focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 Get Started
-            </a>
+            </button>
         </div>
     </div>
             </div>
@@ -200,9 +244,9 @@ const Pricing = () => {
             </li>
         </ul>
         <div className="mt-6 rounded-md shadow">
-            <a href="#" className="flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button name="pro"  onClick={(e) => handleCheckout(e)} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 Get Started
-            </a>
+            </button>
         </div>
     </div>
             </div>

@@ -9,7 +9,12 @@ import Pricing from '../components/Pricing'
 import {signIn, signOut} from "next-auth/react";
 
 
+
+
+
 export default function Home() {
+
+
   
   return (
     <div>
@@ -18,6 +23,8 @@ export default function Home() {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta charSet="UTF-8" />
       </Head>  
+
+
 
       {/* <!-- Hero Section --> */}
     <section id="hero">
