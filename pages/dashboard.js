@@ -33,7 +33,7 @@ const Dashboard = ({se, userData}) => {
           localStorage.setItem("limit", JSON.stringify(userData.limit));
         }
 
-      }, []);
+      }, [limit, userData.limit]);
 
     const handleToggle = () => {
         setActive(!isActive);
