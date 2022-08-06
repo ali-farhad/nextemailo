@@ -17,10 +17,6 @@ export async function checkout({lineItems}) {
         lineItems,
         successUrl: `${window.location.origin}/?status=success`,
         cancelUrl: `${window.location.origin}/?status=cancel`,
-        //run function when payment is successful
-        onSuccess: async (result) => {
-            console.log(result);
-        }
 
     })
 }
