@@ -1,4 +1,4 @@
-import Stripe from "@stripe/react-stripe-js";
+import { Stripe } from 'stripe';
 
 import { buffer } from "micro";
 

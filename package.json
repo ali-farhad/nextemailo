@@ -22,7 +22,8 @@
     "react-dom": "18.2.0",
     "react-loading-skeleton": "^3.1.0",
     "react-multi-carousel": "^2.8.2",
-    "sass": "^1.54.0"
+    "sass": "^1.54.0",
+    "stripe": "^10.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.7",
