@@ -1,22 +1,28 @@
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from '@stripe/stripe-js';
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_API_KEY);
 
-export async function checkout({lineItems}) {
-    let stripePromise = null;
+export const checkout = async item => {
+  try {
+    // const lineItem = items.map(p => ({ price: p.id, quantity: 1 }))
+     const lineItems = [{price: item.id, quantity: 1}];
+    const { session } = await fetch('/api/stripe/sessions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ lineItems }),
+    }).then(res => res.json());
 
-    const getStripe =  async () => {
-        if(!stripePromise) {
-            stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_API_KEY);
-        }
-        return stripePromise;
+
+    const stripe = await stripePromise;
+    const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+
+    if (error) {
+      if (error instanceof Error) throw new Error(error.message)
+    } else {
+      throw error
     }
-
-    const stripe = await getStripe();
-
-    await stripe.redirectToCheckout({
-        mode: 'payment',
-        lineItems,
-        successUrl: `${window.location.origin}/?status=success`,
-        cancelUrl: `${window.location.origin}/?status=cancel`,
-
-    })
+  } catch (error) {
+    console.log(error)
+  }
 }

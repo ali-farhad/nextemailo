@@ -1,3 +1,5 @@
+import React, {useState} from "react"
+import Stripe from "stripe"
 import Head from 'next/head'
 
 //import componenets
@@ -7,14 +9,19 @@ import Pricing from '../components/Pricing'
 
 //import auth
 import {signIn, signOut} from "next-auth/react";
+import { useSession, getSession } from "next-auth/react"
+import { GetUserByEmail } from '../services/cloud';
 
 
 
 
 
-export default function Home() {
 
 
+export default function Home({prices, userData}) {
+  const [user, setUser] = useState(userData);
+
+  // console.log(user, "USERRR");
   
   return (
     <div>
@@ -156,7 +163,7 @@ export default function Home() {
     </section>  
 
     {/* PRICING COMPONENET  */}
-    <Pricing/>
+    <Pricing prices={prices} user={user}/>
 
      {/* <!-- CTA Section --> */}
     <section id="cta" className="py-24 bg-darkViolet">
@@ -167,11 +174,14 @@ export default function Home() {
         Get 100 free verifications/month. Free forever, no credit card required.
 
         </h5>
+
         <button
-          className="px-10 py-5 mx-auto text-1xl font-bold text-white rounded-full bg-cyan hover:bg-cyanLlight md:text-base md:py-3 focus:outline-none"
+        type="button"
+        className={` disabled:bg-slate-50 px-10 py-5 mx-auto text-1xl font-bold text-white rounded-full bg-cyan hover:bg-cyanLlight md:text-base md:py-3 focus:outline-none`}
         >
-          Sign Up Free
+        Sign Up Free
         </button>
+
       </div>
     </section> 
 
@@ -185,3 +195,20 @@ export default function Home() {
 }
 
 
+export async function getServerSideProps(ctx) {
+  const session = await getSession(ctx)
+  const userData = await GetUserByEmail(session?.user.email || "");
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+  const { data: prices } = await stripe.prices.list({
+    active: true, // Only bring active prices (a product can have multiple prices)
+    limit: 10,
+    expand: ['data.product'],
+  })
+
+  return {
+    props: {
+      prices,
+      userData
+    },
+  }
+}

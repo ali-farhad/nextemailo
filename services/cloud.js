@@ -269,3 +269,22 @@ export const getComments = async (slug) => {
 
   return result.comments;
 };
+
+
+export const UpdatePlan = async (email, limit, pquota, plan) => {
+  const query = gql`
+  mutation UpdatePlan($email: String!, $limit: Int!, $pquota: Int!, $plan: String!) {
+    updateUser: updateNextUser(where: {email: $email}, data: {limit: $limit, pquota: $pquota, plan: $plan}) {
+      email
+      plan
+      limit
+      pquota 
+    }
+  }
+  `;
+
+  const result = await request(graphqlAPI, query, { email, limit, pquota, plan });
+
+  return result;
+
+}

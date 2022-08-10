@@ -1,60 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { checkout } from '../checkout';
-
 import { getPricing } from '../services/cloud'
 import {useSession, signIn, signOut} from "next-auth/react";
+import { checkout } from './../checkout';
 
 
-const Pricing = () => {
-    const [pricing, setPricing] = useState([]);
-    const session = useSession();
-    console.log(session.status); //unauthenticated
 
-    useEffect(() => {
-        getPricing().then((newPricing) => {
-          
-          setPricing(newPricing[0].node);
-        });
-      }, []);
+const Pricing = (props) => {
+    // const { product, unit_amount } = prices;
+    const { data: session, status } = useSession();
+    var prices = props.prices;
+    var pquota;
 
-    const handleCheckout = (e) => {
+    if(status === "authenticated") {
+       
+        pquota = props.user.pquota;
+        }
+
+        if(status === "unauthenticated") {
+       
+            pquota = 100;
+            }
+    
+
+
+
+    // console.log(prices)
+
+   
+    // console.log(prices, "wtf")
+
+
+
+    console.log(status);
+
+
+    // const proPlan = prices[0].product.name;
+    // const starterPlan = prices[1].unit_amount;
+    // console.log(starterPlan)
+   
+
+    //   console.log(pricing);
+
+    const handleCheckout = (e, item) => {
         e.preventDefault();
 
-        if(session.status === 'unauthenticated') {
+        if(status === 'unauthenticated') {
            return  signIn("google");
         }
         else {
 
-          
 
+            checkout(item);
+            
 
-         
-        if(e.target.name==="starter") {
-            let lineItems = [
-                {
-                    price: "price_1LTSW8G0xa05mnESwf7RE2vZ",
-                    quantity: 1,
-                }
-            ];
-
-            return checkout({lineItems});    
-
-        }; 
-
-        if(e.target.name==="pro") {
-            let lineItems = [
-                {
-                    price: "price_1LTTBSG0xa05mnESvBxa9XFb",
-                    quantity: 1,
-                }
-            ];
-
-            checkout({lineItems});    
-
-        } 
-        
-        
-        
         
     }
 
@@ -119,10 +117,16 @@ const Pricing = () => {
                 </p>
             </li>
         </ul>
+        {/* if pquota is 100 */}
+      
         <div className="mt-6 rounded-md shadow">
+        {pquota === 100 && (
             <button onClick={() => signIn("google")}  className=" w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-black hover:outline hover:outline-2 outline outline-1  focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-                Get Started
+                Get Started 
             </button>
+        )}
+    
+            
         </div>
     </div>
             </div>
@@ -131,15 +135,17 @@ const Pricing = () => {
             <div className="rounded-lg shadow-lg overflow-hidden  outline outline-cyan w-full">
             <div className="px-6 py-8 bg-white dark:bg-gray-800 sm:p-10 sm:pb-6">
             <div className="flex justify-center">
+
             <span className="inline-flex px-4 py-1 dark:text-white rounded-full text-sm leading-5 font-semibold tracking-wide uppercase">
-                Starter Plan
+                  { prices[1].product.name }
             </span>
+           
             </div>
             <div className="mt-4 flex justify-center text-6xl leading-none font-extrabold dark:text-white">
             <span className="ml-1 mr-3 text-xl leading-8 font-medium text-gray-500 dark:text-gray-400">
                 from
             </span>
-            ${pricing.starterValue}
+            ${prices[1].unit_amount /100}
             <span className="ml-1 pt-8 text-2xl leading-8 font-medium text-gray-500 dark:text-gray-400">
                 /month
             </span>
@@ -182,9 +188,18 @@ const Pricing = () => {
             </li>
         </ul>
         <div className="mt-6 rounded-md shadow">
-            <button name="starter"  onClick={(e) => handleCheckout(e)} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-cyan hover:bg-cyanLight focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-                Get Started
-            </button>
+        {pquota === 100 && (
+            <button name="starter"  onClick={(e) => handleCheckout(e, prices[1])} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-cyan hover:bg-cyanLight focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            Get Started
+        </button>
+        )}
+
+        {pquota === 10000 && (
+            <button name="starter"  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-cyan hover:bg-cyanLight focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            Currenlty Subscribed
+        </button>
+        )}
+           
         </div>
     </div>
             </div>
@@ -194,14 +209,14 @@ const Pricing = () => {
             <div className="px-6 py-8 bg-white dark:bg-gray-800 sm:p-10 sm:pb-6">
             <div className="flex justify-center">
             <span className="inline-flex px-4 py-1 dark:text-white rounded-full text-sm leading-5 font-semibold tracking-wide uppercase">
-                Pro Plan
+                {prices[0].product.name}
             </span>
             </div>
             <div className="mt-4 flex justify-center text-6xl leading-none font-extrabold dark:text-white">
             <span className="ml-1 mr-3 text-xl leading-8 font-medium text-gray-500 dark:text-gray-400">
                 from
             </span>
-                ${pricing.proValue}
+            ${prices[0].unit_amount /100}
             <span className="ml-1 pt-8 text-2xl leading-8 font-medium text-gray-500 dark:text-gray-400">
                 /month
             </span>
@@ -244,9 +259,24 @@ const Pricing = () => {
             </li>
         </ul>
         <div className="mt-6 rounded-md shadow">
-            <button name="pro"  onClick={(e) => handleCheckout(e)} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
-                Get Started
-            </button>
+        {pquota === 100 && (
+             <button name="pro" onClick={(e) => handleCheckout(e, prices[0])} className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+             Get Started
+         </button>
+        )}
+
+        {pquota === 100000 && (
+             <button name="pro"  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+             Currently Subscribed
+         </button>
+        )}
+
+        {pquota === 10000 && (
+             <button name="pro"  onClick={(e) => handleCheckout(e, prices[0])}  className="w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-darkViolet hover:bg-veryDarkViolet focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+             Upgrade
+         </button>
+        )}
+           
         </div>
     </div>
             </div>
@@ -259,3 +289,7 @@ const Pricing = () => {
 }
 
 export default Pricing
+
+
+
+  
