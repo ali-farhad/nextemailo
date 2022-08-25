@@ -2,13 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { getPricing } from '../services/cloud'
 import {useSession, signIn, signOut} from "next-auth/react";
 import { checkout } from './../checkout';
+import { useRouter } from 'next/router';
 
 
 
 const Pricing = (props) => {
     // const { product, unit_amount } = prices;
+    const router = useRouter();
+
+
     const { data: session, status } = useSession();
     var prices = props.prices;
+    // console.log(prices, "PPP");
     var pquota;
 
     if(status === "authenticated") {
@@ -27,11 +32,10 @@ const Pricing = (props) => {
     // console.log(prices)
 
    
-    // console.log(prices, "wtf")
 
 
 
-    console.log(status);
+    // console.log(status);
 
 
     // const proPlan = prices[0].product.name;
@@ -45,7 +49,7 @@ const Pricing = (props) => {
         e.preventDefault();
 
         if(status === 'unauthenticated') {
-           return  signIn("google");
+           return  router.push('/enroll');
         }
         else {
 
@@ -121,7 +125,7 @@ const Pricing = (props) => {
       
         <div className="mt-6 rounded-md shadow">
         {pquota === 100 && (
-            <button onClick={() => signIn("google")}  className=" w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-black hover:outline hover:outline-2 outline outline-1  focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button onClick={handleCheckout}  className=" w-full flex items-center justify-center px-5 py-3 border border-transparent text-base leading-6 font-medium rounded-md text-black hover:outline hover:outline-2 outline outline-1  focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 Get Started 
             </button>
         )}
