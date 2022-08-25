@@ -2,6 +2,8 @@ import React, { useEffect, useState, useReducer } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Validator from '../components/Validator';
+import DotLoader from "react-spinners/DotLoader";
+
 
 
 //import auth
@@ -44,12 +46,6 @@ const Dashboard = ({se, userData}) => {
 
     // console.log(userData);
 
-    if(status === "loading" && status === "unauthenticated") {
-    return (
-        <div><ErrorPage /></div>
-    )
-    }
-
    
     const [limit, setLimit] = useState(userData.limit);
   
@@ -75,7 +71,12 @@ const Dashboard = ({se, userData}) => {
             };
 
         if (status === "loading") {
-            return <p>Loading...</p>
+          return (
+            <div className="flex justify-center md:mt-32">
+            <DotLoader color="#22d5d0"/>    
+          </div>
+    
+          )
           }
         
           if (status === "unauthenticated") {
@@ -258,6 +259,15 @@ export default Dashboard
 export async function getServerSideProps(ctx) {
     //get session
     const session = await getSession(ctx)
+      if (!session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
     // console.log(session.user.email);
     const userData = await GetUserByEmail(session?.user.email || "");
     // console.log(userData)

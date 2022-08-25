@@ -1,9 +1,16 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import CredentialsProvider from "next-auth/providers/credentials";
+import Credentials from "next-auth/providers/credentials";
 import { compare, hash } from "bcrypt";
 import { GraphQLClient, gql } from "graphql-request";
 import {useSession, signIn, signOut} from "next-auth/react";
+import { data } from "autoprefixer";
+import clientPromise from './../../../src/connectDB';
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
+import EmailProvider from 'next-auth/providers/email'
+
+
+
 
 const client = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT, {
     headers: {
@@ -13,68 +20,73 @@ const client = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT, {
 
 export default NextAuth({
     providers: [
-        // CredentialsProvider({
-        //     name: "Email and Password",
-        //     credentials: {
-        //         email: {
-        //             label: "Email",
-        //             type: "email",
-        //             placeholder: "Enter your Email Address"
-        //         },
-        //         password: {
-        //             label: "Password",
-        //             type: "password",
-        //             placeholder: "Enter your Password"
-        //         },
-        //     },
-        //     authorize: async ({ email, password }) => {
-        //         const { user } = await client.request(GetUserByEmail, {
-        //           email,
-        //         });
-              
-        //         if (!user) {
-        //           const { newUser } = await client.request(
-        //             CreateNextUserByEmail,
-        //             {
-        //               email,
-        //               password: await hash(password, 12),
-        //             }
-        //           );
-              
-        //           return {
-        //             id: newUser.id,
-        //             username: email,
-        //             email,
-        //           };
-        //         }
-              
-        //         const isValid = await compare(password, user.password);
-              
-        //         if (!isValid) {
-        //           throw new Error("Wrong credentials. Try again.");
-        //         }
-              
-        //         return {
-        //           id: user.id,
-        //           username: email,
-        //           email,
-        //         };
-        //       },
-        // },
-    
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: {
-              params: {
-                prompt: "consent",
-                access_type: "offline",
-                response_type: "code"
-              }
-            }
-          })
+      // Credentials({
+      //   name: "credentials",
+      //   credentials: {
+      //     email: {
+      //       label: "Email",
+      //       type: "email",
+      //       placeholder: "jsmith@gmail.com",
+      //     },
+      //     password: { label: "Password", type: "password" },
+      //   },
+      //   authorize: async (credentials, request) => {
+      //     // login logic goes here
+      //     const { email, password } = credentials;
+      //     const { user } = await client.request(GetUserByEmail, {
+      //       email: credentials.email
+      //   });
+
+      //   ///check if user got error
+
+      //     if (!user) {
+      //       throw new Error("Email not Found. Please Register!")
+      //     }
+ 
+      //    if(user) {
+      //     return user
+      //    }
+      
+          
+
+      //   },
+      // }),
+      EmailProvider({
+        server: {
+          host: process.env.EMAIL_SERVER_HOST,
+          port: process.env.EMAIL_SERVER_PORT,
+          auth: {
+            user: process.env.EMAIL_SERVER_USER,
+            pass: process.env.EMAIL_SERVER_PASSWORD
+          }
+        },
+        from: process.env.EMAIL_FROM
+      }),
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      }),
     ],
+    pages: {
+      signIn: "/enroll",
+    },
+    adapter: MongoDBAdapter(clientPromise),
     callbacks: {
+      async jwt({ token, user, account, profile, isNewUser }) {
+      
+        if (user) {
+          token.enabled = user.Enabled
+          console.debug("IFFFFFFFFFFF***********", user)
+          const ua = user.UserAttributes
+          // for (let i = 0; i < ua.length; i++) {
+          //   const att = ua[i];
+          //   token[att.Name] = att.Value
+          // }
+          console.debug("Token after data transfer: ", token)
+          // some custom logic here
+        }
+        return token
+      },
         //get data from google
         signIn: async (token,account) => {
             // console.log(token.user, "token");W
@@ -88,10 +100,12 @@ export default NextAuth({
                 CreateNextUserByEmail,
                 {
                 email : token.user.email,
+                password: "adfadfasdfasdfsafd",
                 userID : token.user.id,
                 plan: "free",
                 limit: 100,
                 pquota: 100,
+
 
                 });
 
@@ -138,14 +152,19 @@ export default NextAuth({
   const GetUserByEmail = gql`
   query GetUserByEmail($email: String!) {
     user: nextUser(where: { email: $email }, stage: DRAFT) {
-      email
+      email,
+      limit,
+      userID,
+      plan,
+      pquota
+
     }
   }
 `;
 
 const CreateNextUserByEmail = gql`
-  mutation CreateNextUserByEmail($email: String!, $userID: String!, $plan: String!, $limit: Int!, $pquota: Int!) {
-    newUser: createNextUser(data: { email: $email, userID: $userID, plan: $plan, limit: $limit, pquota: $pquota }) {
+  mutation CreateNextUserByEmail($email: String!, $password: String! $userID: String!, $plan: String!, $limit: Int!, $pquota: Int!) {
+    newUser: createNextUser(data: { email: $email, password: $password userID: $userID, plan: $plan, limit: $limit, pquota: $pquota }) {
       id
     }
   }

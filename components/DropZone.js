@@ -5,13 +5,17 @@ import styles from "../styles/DropZone.module.css";
 import { useSession} from "next-auth/react";
 
 
-import ClipLoader from "react-spinners/ClipLoader";
+import PropagateLoader from "react-spinners/PropagateLoader";
 import { UpdateLimit } from '../services/cloud';
 
+import Swal from 'sweetalert2'
 
 
 const DropZone = ({ data, dispatch }) => {
     const { data: session, status } = useSession();
+
+    
+
 
     const [statusId, setStatusId] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
@@ -19,6 +23,47 @@ const DropZone = ({ data, dispatch }) => {
     const [csvURL, setCsvURL] = useState("");
     const [minusQuota, setMinusQuota] = useState(0);
     const [ErrorAPI, setErrorAPI] = useState("");
+
+
+    const sendEmail = async (csvLink) => {
+      
+      const email = session.user.email;
+      const payload  = {
+        csvUrl: csvLink,
+        email: email
+      }
+        const response = await fetch('/api/sendemail', {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+          'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({args: payload}),
+
+        });
+          const data = await response.json()
+          // setMsg(data.message);
+
+          if(data.success) {
+            Swal.fire({
+              title: 'Email Sent! 🎉',
+              text: 'your CSV file has been sent to your email address successfully!',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            })
+          } else {
+            Swal.fire({
+              title: 'Error!',
+              text: 'Something went wrong!',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            })
+          }
+        
+    }
+
+    
+
   // onDragEnter sets inDropZone to true
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -28,6 +73,7 @@ const DropZone = ({ data, dispatch }) => {
 
   //useEfect
   useEffect(() => {
+  
     getFile();
   }, [statusId])
 
@@ -102,9 +148,9 @@ const DropZone = ({ data, dispatch }) => {
     // loop over files and add to formData
     files.forEach((file) => formData.append("file_contents", file));
     //console log file
-    console.log(files[0]);
+    // console.log(files[0]);
 
-    console.log(formData);
+    // console.log(formData);
 
 
 
@@ -114,19 +160,19 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NEXT_PUBLIC_EMAILO_API_KEY}&filename=emails`, requestOptions)
+fetch(`${process.env.NEXT_PUBLIC_EMAILO_VERIFY_URI}${process.env.NEXT_PUBLIC_EMAILO_API_KEY}&filename=emails`, requestOptions)
   .then(response => response.text())
   .then(result => {
-    console.log(result);
+    // console.log(result);
     setStatusId(result);
 })
   .catch(error => console.log('error', error));
   };
 
 
-  const getFile = () => {
+  const getFile = async () => {
     setIsReady(false);
-    console.log(statusId, "STATE");
+    // console.log(statusId, "STATE");
     //make a get call via fetch
     fetch(`${process.env.NEXT_PUBLIC_EMAILO_UPLOAD_URI}${process.env.NEXT_PUBLIC_EMAILO_API_KEY}&id=${statusId}`)
     .then(response => response.text())
@@ -134,16 +180,16 @@ fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NE
         //clean result by |
         let cleanResult = result.split("|");
         if(cleanResult.includes("finished")) {
-            console.log(cleanResult[8]);
-            console.log(cleanResult);
+            // console.log(cleanResult[8]);
+            // console.log(cleanResult);
             setIsReady(true);
             setIsUploading(false);
             setCsvURL(cleanResult[8]);
             minusQuota = cleanResult[6];
             //convert to number
-            console.log(typeof(cleanResult[3]));
+            // console.log(typeof(cleanResult[3]));
             //open new tab with url
-            window.open(cleanResult[8]);
+            // window.open(cleanResult[8]);
 
             //update limit
             const limit = JSON.parse(localStorage.getItem("limit"));
@@ -153,12 +199,17 @@ fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NE
               }); 
 
 
+              //wait for 5 seconds
+              sendEmail(cleanResult[8]);
+
+        
+
         }
 
         if(cleanResult.includes("progress")) {
-            console.log("loading");
-            //call function every 10 seconds
-            setTimeout(getFile, 10000);
+            // console.log("loading");
+            //call function every 30 seconds
+            setTimeout(getFile, 30000);
         }
 
         if(statusId==="no_credit") {
@@ -175,6 +226,7 @@ fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NE
 
   return (
     <div className="max-w-2xl mx-auto">
+    
       <div
         className={styles.dropzone}
         onDrop={(e) => handleDrop(e)}
@@ -207,7 +259,12 @@ fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NE
       )}
 
         {isUploading &&( 
-          <ClipLoader color={"#fffff"} size={150} />
+          <div className="flex w-full justify-center p-20">
+          <PropagateLoader
+          color="#27e0b9"
+          size={20}
+        />
+        </div>
 
         )}
 
@@ -219,7 +276,7 @@ fetch(`https://apps.emaillistverify.com/api/verifApiFile?secret=${process.env.NE
         {isReady && ErrorAPI.length===0 && (
             <div className="flex justify-center">
               <a className=" inline-block p-2 px-8 text-white bg-cyan rounded-lg hover:opacity-70 focus:outline-none" href={csvURL} target="_blank">
-              Download again
+              Download Here
             </a> 
             </div>
         )}

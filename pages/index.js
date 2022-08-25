@@ -12,6 +12,8 @@ import {signIn, signOut} from "next-auth/react";
 import { useSession, getSession } from "next-auth/react"
 import { GetUserByEmail } from '../services/cloud';
 
+import Link from "next/link"
+
 
 
 
@@ -20,6 +22,7 @@ import { GetUserByEmail } from '../services/cloud';
 
 export default function Home({prices, userData}) {
   const [user, setUser] = useState(userData);
+
 
   // console.log(user, "USERRR");
   
@@ -175,12 +178,13 @@ export default function Home({prices, userData}) {
 
         </h5>
 
-        <button
+        <Link href="/enroll"><button
         type="button"
         className={` disabled:bg-slate-50 px-10 py-5 mx-auto text-1xl font-bold text-white rounded-full bg-cyan hover:bg-cyanLlight md:text-base md:py-3 focus:outline-none`}
         >
         Sign Up Free
         </button>
+        </Link>
 
       </div>
     </section> 
