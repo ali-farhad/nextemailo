@@ -275,7 +275,7 @@ fetch(`${process.env.NEXT_PUBLIC_EMAILO_VERIFY_URI}${process.env.NEXT_PUBLIC_EMA
 
         {isReady && ErrorAPI.length===0 && (
             <div className="flex justify-center">
-              <a className=" inline-block p-2 px-8 text-white bg-cyan rounded-lg hover:opacity-70 focus:outline-none" href={csvURL} target="_blank">
+              <a rel="noreferrer" className=" inline-block p-2 px-8 text-white bg-cyan rounded-lg hover:opacity-70 focus:outline-none" href={csvURL} target="_blank">
               Download Here
             </a> 
             </div>
