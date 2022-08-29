@@ -2,7 +2,7 @@ import React, {useState} from "react"
 import Stripe from "stripe"
 import Head from 'next/head'
 
-//import componenets
+//import componenet
 import Validator from '../components/Validator'
 import Footer from '../components/Footer'
 import Pricing from '../components/Pricing'
